@@ -124,7 +124,7 @@ app.use(
   })
 );
 
-app.get('/api/subscriptions', (req, res, next) => {
+app.get("/api/subscriptions", (req, res, next) => {
   Subscription.find()
   .then(results => {
     res.json(results);  //
@@ -136,8 +136,7 @@ app.get('/api/subscriptions', (req, res, next) => {
   //const subscriptions = getSubscriptions()
 
   });
-
-  app.get('/api/subscriptions/:id', (req, res, next) => {
+  app.get('/api/subscriptions/:id', jsonParser, (req, res, next) => {
     const { id } = req.params;
     //const userId = req.user.id;
   
@@ -146,9 +145,9 @@ app.get('/api/subscriptions', (req, res, next) => {
       err.status = 400;
       return next(err);
     }
-  
-    Subscription.findOne({ _id: id})
-      .populate('recipients')
+    Subscription.findOne({ _id: id})  
+   // Subscription.findOne({ _id: id, userId })
+      //.populate('recipients')
       .then(result => {
         if (result) {
           res.json(result);
@@ -160,7 +159,8 @@ app.get('/api/subscriptions', (req, res, next) => {
         next(err);
       });
   });
-  app.post('/api/subscriptions', jsonParser, (req, res, next) => {
+  
+  app.post("/api/subscriptions", jsonParser, (req, res, next) => {
     const { productName, productColor, productSize, frequency, duration, gift, color, suspended, delivery, recipients = [] } = req.body;
     const newSubscription = { productName, productColor, productSize, frequency, duration, gift, color, suspended, delivery, recipients };
     
@@ -190,6 +190,19 @@ app.get('/api/subscriptions', (req, res, next) => {
     //     }
     //   })
     // };
+
+  
+    Subscription.create(newSubscription) //
+      .then(result => {
+        res
+          .location(`${req.originalUrl}/${result.id}`)
+          .status(201)
+          .json(result); //
+      })
+      .catch(err => {
+        next(err);
+      });
+  });
 app.put('/api/subscriptions/:id', jsonParser, (req, res) => {
   console.log('put called. req.body = ', req.body);
   const requiredFields = ['id'];
@@ -215,12 +228,13 @@ app.put('/api/subscriptions/:id', jsonParser, (req, res) => {
       updateSubscription[field] = req.body[field];
     }
   });
-
+  const id = req.params.id;
 
   console.log(`Updating subscription \`${req.params.id}\``);
-  Subscription.findByIdAndUpdate(id, updateNote, { new: true })
+  Subscription.findByIdAndUpdate(id, updateSubscription, { new: true })
     .then(result => {
       if (result) {
+        console.log('put request response is: ', res);
         res.json(result);
       } else {
         next();
@@ -233,24 +247,12 @@ app.put('/api/subscriptions/:id', jsonParser, (req, res) => {
 // when DELETE request comes in with an id in path,
 // try to delete that item from ShoppingList.
 app.delete('/shopping-list/:id', (req, res) => {
-  ShoppingList.delete(req.params.id);
-  console.log(`Deleted shopping list item \`${req.params.ID}\``);
+  Subscription.delete(req.params.id);
+  console.log(`Deleted subscription list item \`${req.params.ID}\``);
   res.status(204).end();
 });
 
-  
-    Subscription.create(newSubscription) //
-      .then(result => {
-        res
-          .location(`${req.originalUrl}/${result.id}`)
-          .status(201)
-          .json(result); //
-      })
-      .catch(err => {
-        next(err);
-      });
-  });
-  
+   
 function runServer(port = PORT) {
   const server = app
     .listen(port, () => {

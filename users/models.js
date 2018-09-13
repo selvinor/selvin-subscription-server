@@ -62,4 +62,15 @@ SubscriptionSchema.methods.serialize = function() {
   };
 };
 const Subscription = mongoose.model('Subscription', SubscriptionSchema);
+// Add `createdAt` and `updatedAt` fields
+SubscriptionSchema.set('timestamps', true);
+
+// Customize output for `res.json(data)`, `console.log(data)` etc.
+SubscriptionSchema.set('toObject', {
+  virtuals: true,     // include built-in virtual `id`
+  versionKey: false,  // remove `__v` version key
+  transform: (doc, ret) => {
+    delete ret._id; // delete `_id`
+  }
+});
 module.exports = {Subscription};
