@@ -203,7 +203,7 @@ app.get("/api/subscriptions", (req, res, next) => {
         next(err);
       });
   });
-app.put('/api/subscriptions/:id', jsonParser, (req, res) => {
+app.put('/api/subscriptions/:id', jsonParser,  (req, res, next) => {
   console.log('put called. req.body = ', req.body);
   const requiredFields = ['id'];
   for (let i=0; i<requiredFields.length; i++) {
@@ -246,12 +246,29 @@ app.put('/api/subscriptions/:id', jsonParser, (req, res) => {
   });
 // when DELETE request comes in with an id in path,
 // try to delete that item from ShoppingList.
-app.delete('/shopping-list/:id', (req, res) => {
-  Subscription.delete(req.params.id);
-  console.log(`Deleted subscription list item \`${req.params.ID}\``);
-  res.status(204).end();
-});
-
+  app.delete('/api/subscriptions/:id', (req, res, next) => {
+    const { id } = req.params;
+    //const userId = req.user.id;
+  
+    /***** Never trust users - validate input *****/
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      const err = new Error('The `id` is not valid');
+      err.status = 400;
+      return next(err);
+    }
+    Subscription.deleteOne({ _id: id})
+   // Subscription.deleteOne({ _id: id, userId })
+      .then(result => {
+        if (result.n) {
+          res.sendStatus(204);
+        } else {
+          res.sendStatus(404);
+        }
+      })
+      .catch(err => {
+        next(err);
+      });
+  });
    
 function runServer(port = PORT) {
   const server = app
