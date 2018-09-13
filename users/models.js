@@ -35,7 +35,7 @@ UserSchema.statics.hashPassword = function(password) {
 };
 
 const SubscriptionSchema = mongoose.Schema({
-  productType:{type: String, default: 'Designer\'s Choice Arrangement'},
+  productName:{type: String, default: 'Designer\'s Choice Arrangement'},
   productColor: {type: Boolean, default: true},
   productSize: {type: String, default: 'standard'},
   frequency:{type: String, default: 'monthly'},
@@ -49,7 +49,7 @@ const SubscriptionSchema = mongoose.Schema({
 
 SubscriptionSchema.methods.serialize = function() {
   return {
-     productType: this.productType || '',
+     productName: this.productName || '',
      productColor: this.productColor || '',
      productSize: this.productSize || '',
      frequency: this.frequency || '',

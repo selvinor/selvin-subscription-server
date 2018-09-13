@@ -29,7 +29,6 @@ app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
-  console.log('*** req.method 1', req.method);
   if (req.method === 'OPTIONS') {
     return res.send(204);
   }
@@ -47,7 +46,7 @@ app.use(function (req, res, next) {
 const getSubscriptions = () => {
   return [{
     "userId" : 1,
-    productType : "Designer's Choice Arrangement", 
+    productName : "Designer's Choice Arrangement", 
     productColor :  "color",
     productSize :  "standard",
     frequency : "monthly", 
@@ -89,7 +88,7 @@ const getSubscriptions = () => {
   },
   {
     userId :  2,
-    productType : "Designer's Bouquet",
+    productName : "Designer's Bouquet",
     productColor :  "color",
     productSize :  "standard",
     frequency : "monthly", 
@@ -125,7 +124,7 @@ app.use(
   })
 );
 
-app.get("/api/subscriptions", (req, res, next) => {
+app.get('/api/subscriptions', (req, res, next) => {
   Subscription.find()
   .then(results => {
     res.json(results);  //
@@ -138,19 +137,37 @@ app.get("/api/subscriptions", (req, res, next) => {
 
   });
 
-  app.post("/api/subscriptions", jsonParser, (req, res, next) => {
-    console.log('*** req', req);
-    const { productType, productColor, productSize, frequency, duration, gift, color, suspended, delivery, recipients = [] } = req.body;
-    const newSubscription = { productType, productColor, productSize, frequency, duration, gift, color, suspended, delivery, recipients };
-    console.log('typeof(newSubscription): ', typeof(newSubscription));
-       console.log('req.body = ', req.body );
-
-    console.log('newSubscription: ', newSubscription);
+  app.get('/api/subscriptions/:id', (req, res, next) => {
+    const { id } = req.params;
+    //const userId = req.user.id;
+  
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      const err = new Error('The `id` is not valid');
+      err.status = 400;
+      return next(err);
+    }
+  
+    Subscription.findOne({ _id: id})
+      .populate('recipients')
+      .then(result => {
+        if (result) {
+          res.json(result);
+        } else {
+          next();
+        }
+      })
+      .catch(err => {
+        next(err);
+      });
+  });
+  app.post('/api/subscriptions', jsonParser, (req, res, next) => {
+    const { productName, productColor, productSize, frequency, duration, gift, color, suspended, delivery, recipients = [] } = req.body;
+    const newSubscription = { productName, productColor, productSize, frequency, duration, gift, color, suspended, delivery, recipients };
     
     //const userId = req.user.id;
     //console.log("req.user", req.user);
     /***** Never trust users - validate input *****/
-    // if (!productType) {
+    // if (!productName) {
     //   const err = new Error("Missing `product` in request body");
     //   err.status = 400;
     //   return next(err);
@@ -173,6 +190,53 @@ app.get("/api/subscriptions", (req, res, next) => {
     //     }
     //   })
     // };
+app.put('/api/subscriptions/:id', jsonParser, (req, res) => {
+  console.log('put called. req.body = ', req.body);
+  const requiredFields = ['id'];
+  for (let i=0; i<requiredFields.length; i++) {
+    const field = requiredFields[i];
+    if (!(field in req.body)) {
+      const message = `Missing \`${field}\` in request body`
+      console.error(message);
+      return res.status(400).send(message);
+    }
+  }
+
+  if (req.params.id !== req.body.id) {
+    const message = `Request path id (${req.params.id}) and request body id (${req.body.id}) must match`;
+    console.error(message);
+    return res.status(400).send(message);
+  }
+  const updateSubscription = {};
+  const updateFields = ['frequency', 'duration', 'gift', 'color', 'suspended', 'delivery', 'recipients' ];
+
+  updateFields.forEach(field => {
+    if (field in req.body) {
+      updateSubscription[field] = req.body[field];
+    }
+  });
+
+
+  console.log(`Updating subscription \`${req.params.id}\``);
+  Subscription.findByIdAndUpdate(id, updateNote, { new: true })
+    .then(result => {
+      if (result) {
+        res.json(result);
+      } else {
+        next();
+      }
+    })
+    .catch(err => {
+      next(err);
+    });
+  });
+// when DELETE request comes in with an id in path,
+// try to delete that item from ShoppingList.
+app.delete('/shopping-list/:id', (req, res) => {
+  ShoppingList.delete(req.params.id);
+  console.log(`Deleted shopping list item \`${req.params.ID}\``);
+  res.status(204).end();
+});
 
   
     Subscription.create(newSubscription) //
