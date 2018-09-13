@@ -120,7 +120,7 @@ app.use(
 );
 
 app.get("/api/subscriptions", (req, res, next) => {
-  //get data from datastore
+  console.log('req.body: ', req.body);
   const subscriptions = getSubscriptions()
     if (!subscriptions) {
       const err = error("No subscriptions yet!");
@@ -131,7 +131,11 @@ app.get("/api/subscriptions", (req, res, next) => {
   });
 
   app.post("/api/subscriptions", (req, res, next) => {
-    const { productType, productColor, productSize, frequency, duration, gift, color, suspended, delivery, recipients } = req.body;
+    const subscriptions = getSubscriptions()
+    
+    const { productType, productColor, productSize, frequency, duration, gift, color, suspended, delivery, recipients } = subscriptions;
+    console.log('subscriptions: ', subscriptions);
+    
     //const userId = req.user.id;
     //console.log("req.user", req.user);
     /***** Never trust users - validate input *****/
@@ -161,7 +165,7 @@ app.get("/api/subscriptions", (req, res, next) => {
 
   
     const newSubscription = { productType, productColor, productSize, frequency, duration, gift, color, suspended, delivery, recipients };
-  
+  console.log('newSubscription: ', newSubscription);
     Subscription.create(newSubscription) //
       .then(result => {
         res

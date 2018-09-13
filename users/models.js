@@ -35,20 +35,11 @@ UserSchema.statics.hashPassword = function(password) {
 };
 
 const SubscriptionSchema = mongoose.Schema({
-  productType: {
-    type: String,
-    required: true
-  },
-  productColor: {type: String, default: ''},
-  productSize: {type: String, default: ''},
-  frequency:  {
-    type: String,
-    required: true
-  },
-  duration:  {
-    type: String,
-    required: true
-  },
+  productType:{type: String, default: 'Designer\'s Choice Arrangement'},
+  productColor: {type: Boolean, default: true},
+  productSize: {type: String, default: 'standard'},
+  frequency:{type: String, default: 'monthly'},
+  duration: {type: String, default: '3'},
   gift: {type: Boolean, default: true},
   color: {type: String, default: 'color'},
   suspended: {type: Boolean, default: false},
