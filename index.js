@@ -205,21 +205,7 @@ app.get("/api/subscriptions", (req, res, next) => {
   });
 app.put('/api/subscriptions/:id', jsonParser,  (req, res, next) => {
   console.log('put called. req.body = ', req.body);
-  const requiredFields = ['id'];
-  for (let i=0; i<requiredFields.length; i++) {
-    const field = requiredFields[i];
-    if (!(field in req.body)) {
-      const message = `Missing \`${field}\` in request body`
-      console.error(message);
-      return res.status(400).send(message);
-    }
-  }
 
-  if (req.params.id !== req.body.id) {
-    const message = `Request path id (${req.params.id}) and request body id (${req.body.id}) must match`;
-    console.error(message);
-    return res.status(400).send(message);
-  }
   const updateSubscription = {};
   const updateFields = ['frequency', 'duration', 'gift', 'color', 'suspended', 'delivery', 'recipients' ];
 
