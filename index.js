@@ -7,6 +7,7 @@ const morgan = require("morgan");
 const passport = require('passport');
 const { router: usersRouter } = require('./users');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
+const {Subscription} = require('./users/models');
 
 mongoose.Promise = global.Promise;
 
@@ -134,11 +135,11 @@ app.get("/api/subscriptions", (req, res, next) => {
     //const userId = req.user.id;
     //console.log("req.user", req.user);
     /***** Never trust users - validate input *****/
-    if (!product) {
-      const err = new Error("Missing `product` in request body");
-      err.status = 400;
-      return next(err);
-    }
+    // if (!productType) {
+    //   const err = new Error("Missing `product` in request body");
+    //   err.status = 400;
+    //   return next(err);
+    // }
   
     // if (folderId && !mongoose.Types.ObjectId.isValid(userId)) {
     //   const err = new Error("The `userId` is not valid");

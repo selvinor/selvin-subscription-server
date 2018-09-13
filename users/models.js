@@ -34,6 +34,41 @@ UserSchema.statics.hashPassword = function(password) {
   return bcrypt.hash(password, 10);
 };
 
-const User = mongoose.model('User', UserSchema);
+const SubscriptionSchema = mongoose.Schema({
+  productType: {
+    type: String,
+    required: true
+  },
+  productColor: {type: String, default: ''},
+  productSize: {type: String, default: ''},
+  frequency:  {
+    type: String,
+    required: true
+  },
+  duration:  {
+    type: String,
+    required: true
+  },
+  gift: {type: Boolean, default: true},
+  color: {type: String, default: 'color'},
+  suspended: {type: Boolean, default: false},
+  delivery: {type: Boolean, default: true},
+  recipients: {type: Array, default: []}
+});
 
-module.exports = {User};
+SubscriptionSchema.methods.serialize = function() {
+  return {
+     productType: this.productType || '',
+     productColor: this.productColor || '',
+     productSize: this.productSize || '',
+     frequency: this.frequency || '',
+     duration: this.duration || '',
+     gift: this.gift || '',
+     color: this.color || '',
+     suspended: this.suspended || '',
+     delivery: this.delivery || '',
+     recipients: this.recipients || ''
+  };
+};
+const Subscription = mongoose.model('Subscription', SubscriptionSchema);
+module.exports = {Subscription};
