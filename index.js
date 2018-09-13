@@ -161,8 +161,8 @@ app.get("/api/subscriptions", (req, res, next) => {
   });
   
   app.post("/api/subscriptions", jsonParser, (req, res, next) => {
-    const { productName, productColor, productSize, frequency, duration, gift, color, suspended, delivery, recipients = [] } = req.body;
-    const newSubscription = { productName, productColor, productSize, frequency, duration, gift, color, suspended, delivery, recipients };
+    const {buyerEmail, buyerFirstName, buyerLastName, buyerPhone, productName, productColor, productSize, frequency, duration, gift, color, suspended, delivery, recipients = [] } = req.body;
+    const newSubscription = { buyerEmail, buyerFirstName, buyerLastName, buyerPhone, productName, productColor, productSize, frequency, duration, gift, color, suspended, delivery, recipients };
     
     //const userId = req.user.id;
     //console.log("req.user", req.user);
@@ -207,7 +207,7 @@ app.put('/api/subscriptions/:id', jsonParser,  (req, res, next) => {
   console.log('put called. req.body = ', req.body);
 
   const updateSubscription = {};
-  const updateFields = ['frequency', 'duration', 'gift', 'color', 'suspended', 'delivery', 'recipients' ];
+  const updateFields = ['buyerEmail', 'buyerFirstName', 'buyerLastName', 'buyerPhone', 'productCode', 'productName', 'frequency', 'duration', 'gift', 'color', 'suspended', 'delivery', 'recipients' ];
 
   updateFields.forEach(field => {
     if (field in req.body) {
