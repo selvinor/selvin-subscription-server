@@ -35,51 +35,51 @@ UserSchema.statics.hashPassword = function(password) {
 };
 
 const SubscriptionSchema = mongoose.Schema({
-  buyerEmail: {type: String, default: ''},
-  buyerFirstName: {type: String, default: ''},
-  buyerLastName: {type: String, default: ''},
-  buyerPhone: {type: String, default: ''},
   productCode: {type: String, default: ''},
-  productName:{type: String, default: 'Designer\'s Choice Arrangement'},
-  productSize: {type: String, default: 'standard'},
-  frequency:{type: String, default: 'monthly'},
-  duration: {type: String, default: '3'},
-  gift: {type: Boolean, default: true},
-  giftMsg: {type: String, default: ''},
+  productName:{type: String, default: ''},
+  productSize: {type: String, default: ''},
+  status: {type: String, default: 'active'},
+  frequency:{type: String, default: ''},
+  duration: {type: String, default: ''},
+  startDate: {type: Date, default: null},
   color: {type: Boolean, default: true},
-  suspended: {type: Boolean, default: false},
-  delivery: {type: Boolean, default: true},
-  recipients: {type: Array, default: [
-    {
-      firstName : {type: String, default: ''},
-      lastName :  {type: String, default: ''},
-      address1 :  {type: String, default: ''},
-      address2 :  {type: String, default: ''},
-      city :  {type: String, default: ''},
-      state :  {type: String, default: ''},
-      zipcode :  {type: String, default: ''},
-    }
+  senderEmail: {type: String, default: ''},
+  senderFirstName: {type: String, default: ''},
+  senderLastName: {type: String, default: ''},
+  senderPhone: {type: String, default: ''},
+  recipientFirstName : {type: String, default: ''},
+  recipientLastName :  {type: String, default: ''},
+  recipientAddress1 :  {type: String, default: ''},
+  recipientAddress2 :  {type: String, default: ''},
+  recipientCity :  {type: String, default: ''},
+  recipientState :  {type: String, default: ''},
+  recipientZipcode :  {type: String, default: ''},
+  recipientPhone :  {type: String, default: ''}
 
-  ]}
 });
 
 SubscriptionSchema.methods.serialize = function() {
   return {
-    buyerEmail: this.buyerEmail || '',
-    buyerFirstName: this.buyerFirstName || '',
-    buyerLastName: this.buyerLastName || '',
-    buyerPhone: this.buyerPhone || '',
     productCode: this.productCode || '',
     productName: this.productName || '',
     productSize: this.productSize || '',
+    status: this.status || '',
     frequency: this.frequency || '',
     duration: this.duration || '',
-    gift: this.gift || '',
-    giftMsg:this.gift || '',
+    startDate: this.startDate || '',
     color: this.color || '',
-    suspended: this.suspended || '',
-    delivery: this.delivery || '',
-    recipients: this.recipients || ''
+    senderEmail: this.senderEmail || '',
+    senderFirstName: this.senderFirstName || '',
+    senderLastName: this.senderLastName || '',
+    senderPhone: this.senderPhone || '',
+    recipientFirstName : this.recipientFirstName || '',
+    recipientLastName :  this.recipientLastName || '',
+    recipientAddress1 :  this.recipientaddress1 || '',
+    recipientAddress2 :  this.recipientaddress2 || '',
+    recipientCity :  this.recipientCity || '',
+    recipientState :  this.recipientState || '',
+    recipientZipcode :  this.recipientZipcode || '',
+    recipientPhone :  this.recipientPhone || ''
   };
 };
 const Subscription = mongoose.model('Subscription', SubscriptionSchema);

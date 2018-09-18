@@ -58,31 +58,31 @@ const getSubscriptions = () => {
     delivery:  true,
     recipients :  [
       {
-        "firstName" : "Jane",
-        "lastName" : "User",
-        "address1" : "123 NW Maple St.",
-        "address2" : null,
-        "city" : "Portland",
-        "state" : "Oregon",
-        "zipcode" : 97204
+        "recipientFirstName" : "Jane",
+        "recipientLastName" : "User",
+        "recipientAddress1" : "123 NW Maple St.",
+        "recipientAddress2" : null,
+        "recipientCity" : "Portland",
+        "recipientState" : "Oregon",
+        "recipientZipcode" : 97204
       },
       {
-        "firstName" : "Jill",
-        "lastName" : "User",
-        "address1" : "222 SE Main St.",
-        "address2" : null,
-        "city" : "Portland",
-        "state" : "Oregon",
-        "zipcode" : 97201
+        "recipientFirstName" : "Jill",
+        "recipientLastName" : "User",
+        "recipientAddress1" : "222 SE Main St.",
+        "recipientAddress2" : null,
+        "recipientCity" : "Portland",
+        "recipientState" : "Oregon",
+        "recipientZipcode" : 97201
       },
       {
-        "firstName" : "Jody",
-        "lastName" : "User",
-        "address1" : "17 NE Tough Rd.",
-        "address2" : null,
-        "city" : "Portland",
-        "state" : "Oregon",
-        "zipcode" : 97210
+        "recipientFirstName" : "Jody",
+        "recipientLastName" : "User",
+        "recipientAddress1" : "17 NE Tough Rd.",
+        "recipientAddress2" : null,
+        "recipientCity" : "Portland",
+        "recipientState" : "Oregon",
+        "recipientZipcode" : 97210
       }
     ]
   },
@@ -100,13 +100,13 @@ const getSubscriptions = () => {
     delivery:  true,
     recipients :  [
       {
-        "firstName" : "Bar",
-        "lastName" : "Foo",
-        "address1" : "77 SE Dump Rd.",
-        "address2" : null,
-        "city" : "Portland",
-        "state" : "Oregon",
-        "zipcode" : 97215
+        "recipientFirstName" : "Bar",
+        "recipientLastName" : "Foo",
+        "recipientAddress1" : "77 SE Dump Rd.",
+        "recipientAddress2" : null,
+        "recipientCity" : "Portland",
+        "recipientState" : "Oregon",
+        "recipientZipcode" : 97215
       }
     ]
   }];
@@ -161,8 +161,9 @@ app.get("/api/subscriptions", (req, res, next) => {
   });
   
   app.post("/api/subscriptions", jsonParser, (req, res, next) => {
-    const {buyerEmail, buyerFirstName, buyerLastName, buyerPhone, productName, productColor, productSize, frequency, duration, gift, color, suspended, delivery, recipients = [] } = req.body;
-    const newSubscription = { buyerEmail, buyerFirstName, buyerLastName, buyerPhone, productName, productColor, productSize, frequency, duration, gift, color, suspended, delivery, recipients };
+    console.log('req.body: ', req.body);
+    const { productCode, productName, frequency, duration, startDate, senderEmail, senderFirstName, senderLastName, senderPhone, recipientFirstName, recipientLastName, recipientAddress1, recipientAddress2, recipientCity, recipientState, recipientZipcode, recipientPhone } = req.body;
+    const newSubscription = { productCode, productName, frequency, duration, startDate, senderEmail, senderFirstName, senderLastName, senderPhone, recipientFirstName, recipientLastName, recipientAddress1, recipientAddress2, recipientCity, recipientState, recipientZipcode, recipientPhone  };
     
     //const userId = req.user.id;
     //console.log("req.user", req.user);
