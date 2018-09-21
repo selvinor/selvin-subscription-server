@@ -60,8 +60,8 @@ const getSubscriptions = () => {
       {
         "recipientFirstName" : "Jane",
         "recipientLastName" : "User",
-        "recipientAddress1" : "123 NW Maple St.",
-        "recipientAddress2" : null,
+        "recipientStreetAddress" : "123 NW Maple St.",
+        "recipientAptSuite" : null,
         "recipientCity" : "Portland",
         "recipientState" : "Oregon",
         "recipientZipcode" : 97204
@@ -69,8 +69,8 @@ const getSubscriptions = () => {
       {
         "recipientFirstName" : "Jill",
         "recipientLastName" : "User",
-        "recipientAddress1" : "222 SE Main St.",
-        "recipientAddress2" : null,
+        "recipientStreetAddress" : "222 SE Main St.",
+        "recipientAptSuite" : null,
         "recipientCity" : "Portland",
         "recipientState" : "Oregon",
         "recipientZipcode" : 97201
@@ -78,8 +78,8 @@ const getSubscriptions = () => {
       {
         "recipientFirstName" : "Jody",
         "recipientLastName" : "User",
-        "recipientAddress1" : "17 NE Tough Rd.",
-        "recipientAddress2" : null,
+        "recipientStreetAddress" : "17 NE Tough Rd.",
+        "recipientAptSuite" : null,
         "recipientCity" : "Portland",
         "recipientState" : "Oregon",
         "recipientZipcode" : 97210
@@ -102,8 +102,8 @@ const getSubscriptions = () => {
       {
         "recipientFirstName" : "Bar",
         "recipientLastName" : "Foo",
-        "recipientAddress1" : "77 SE Dump Rd.",
-        "recipientAddress2" : null,
+        "recipientStreetAddress" : "77 SE Dump Rd.",
+        "recipientAptSuite" : null,
         "recipientCity" : "Portland",
         "recipientState" : "Oregon",
         "recipientZipcode" : 97215
@@ -162,8 +162,8 @@ app.get("/api/subscriptions", (req, res, next) => {
   
   app.post("/api/subscriptions", jsonParser, (req, res, next) => {
     console.log('req.body: ', req.body);
-    const { productCode, productName, frequency, duration, startDate, senderEmail, senderFirstName, senderLastName, senderPhone, recipientFirstName, recipientLastName, recipientAddress1, recipientAddress2, recipientCity, recipientState, recipientZipcode, recipientPhone } = req.body;
-    const newSubscription = { productCode, productName, frequency, duration, startDate, senderEmail, senderFirstName, senderLastName, senderPhone, recipientFirstName, recipientLastName, recipientAddress1, recipientAddress2, recipientCity, recipientState, recipientZipcode, recipientPhone  };
+    const { productCode, productName, frequency, duration, startDate, senderEmail, senderFirstName, senderLastName, senderPhone, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage } = req.body;
+    const newSubscription = { productCode, productName, frequency, duration, startDate, senderEmail, senderFirstName, senderLastName, senderPhone, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage  };
     
     //const userId = req.user.id;
     //console.log("req.user", req.user);
@@ -208,7 +208,7 @@ app.put('/api/subscriptions/:id', jsonParser,  (req, res, next) => {
   console.log('put called. req.body = ', req.body);
 
   const updateSubscription = {};
-  const updateFields = ['buyerEmail', 'buyerFirstName', 'buyerLastName', 'buyerPhone', 'productCode', 'productName', 'frequency', 'duration', 'gift', 'color', 'suspended', 'delivery', 'recipients' ];
+  const updateFields = [productCode, startDate, senderEmail, senderFirstName, senderLastName, senderPhone, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage];
 
   updateFields.forEach(field => {
     if (field in req.body) {
