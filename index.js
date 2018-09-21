@@ -7,12 +7,12 @@ const {Subscription} = require('./users/models');
 const mongoose = require('mongoose');
 const cors = require("cors");
 
-const passport = require('passport');
+//const passport = require('passport');
 
 const { PORT, CLIENT_ORIGIN } = require("./config");
 const jsonParser = bodyParser.json();
 // const { router: usersRouter } = require('./users');
- const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
+// const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 
 
 mongoose.Promise = global.Promise;
@@ -35,83 +35,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-// passport.use(localStrategy);
-// passport.use(jwtStrategy);
 
-//app.use('/api/users/', usersRouter);
-//app.use('/api/auth/', authRouter);
-
-//const jwtAuth = passport.authenticate('jwt', { session: false });
-/*
-const getSubscriptions = () => {
-  return [{
-    "userId" : 1,
-    productName : "Designer's Choice Arrangement", 
-    productColor :  "color",
-    productSize :  "standard",
-    frequency : "monthly", 
-    duration :  "3",
-    gift :  true,
-    giftMessage :  null,
-    color :  true,
-    suspended :  false, 
-    delivery:  true,
-    recipients :  [
-      {
-        "recipientFirstName" : "Jane",
-        "recipientLastName" : "User",
-        "recipientStreetAddress" : "123 NW Maple St.",
-        "recipientAptSuite" : null,
-        "recipientCity" : "Portland",
-        "recipientState" : "Oregon",
-        "recipientZipcode" : 97204
-      },
-      {
-        "recipientFirstName" : "Jill",
-        "recipientLastName" : "User",
-        "recipientStreetAddress" : "222 SE Main St.",
-        "recipientAptSuite" : null,
-        "recipientCity" : "Portland",
-        "recipientState" : "Oregon",
-        "recipientZipcode" : 97201
-      },
-      {
-        "recipientFirstName" : "Jody",
-        "recipientLastName" : "User",
-        "recipientStreetAddress" : "17 NE Tough Rd.",
-        "recipientAptSuite" : null,
-        "recipientCity" : "Portland",
-        "recipientState" : "Oregon",
-        "recipientZipcode" : 97210
-      }
-    ]
-  },
-  {
-    userId :  2,
-    productName : "Designer's Bouquet",
-    productColor :  "color",
-    productSize :  "standard",
-    frequency : "monthly", 
-    duration :  "6",
-    gift :  true,
-    giftMessage :  null,
-    color :  true,
-    suspended :  false, 
-    delivery:  true,
-    recipients :  [
-      {
-        "recipientFirstName" : "Bar",
-        "recipientLastName" : "Foo",
-        "recipientStreetAddress" : "77 SE Dump Rd.",
-        "recipientAptSuite" : null,
-        "recipientCity" : "Portland",
-        "recipientState" : "Oregon",
-        "recipientZipcode" : 97215
-      }
-    ]
-  }];
-}
-*/
 app.use(
   morgan(process.env.NODE_ENV === "production" ? "common" : "dev", {
     skip: (req, res) => process.env.NODE_ENV === "test"
@@ -165,33 +89,7 @@ app.get("/api/subscriptions", (req, res, next) => {
     const { productCode, productName, frequency, duration, startDate, senderEmail, senderFirstName, senderLastName, senderPhone, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage } = req.body;
     const newSubscription = { productCode, productName, frequency, duration, startDate, senderEmail, senderFirstName, senderLastName, senderPhone, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage  };
     
-    //const userId = req.user.id;
-    //console.log("req.user", req.user);
-    /***** Never trust users - validate input *****/
-    // if (!productName) {
-    //   const err = new Error("Missing `product` in request body");
-    //   err.status = 400;
-    //   return next(err);
-    // }
-  
-    // if (folderId && !mongoose.Types.ObjectId.isValid(userId)) {
-    //   const err = new Error("The `userId` is not valid");
-    //   err.status = 400;
-    //   return next(err);
-    // }
-    //console.log("recipients", recipients);
-  
-    // if (recipients) {
-    //   recipients.filter((recipient) => {
-    //     //console.log("tags", tag);
-    //     if (!mongoose.Types.ObjectId.isValid(recipient)) {
-    //       const err = new Error("The `recipients` array contains an invalid `id`");
-    //       err.status = 400;
-    //       return next(err);
-    //     }
-    //   })
-    // };
-
+ 
   
     Subscription.create(newSubscription) //
       .then(result => {
