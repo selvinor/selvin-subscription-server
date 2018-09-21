@@ -55,8 +55,8 @@ const SubscriptionSchema = mongoose.Schema({
   recipientCity :  {type: String, default: ''},
   recipientState :  {type: String, default: ''},
   recipientZipcode :  {type: String, default: ''},
-  recipientPhone :  {type: String, default: ''}
-
+  recipientPhone :  {type: String, default: ''},
+  recipientMessage :  {type: String, default: ''}
 });
 
 SubscriptionSchema.methods.serialize = function() {
@@ -81,7 +81,9 @@ SubscriptionSchema.methods.serialize = function() {
     recipientCity :  this.recipientCity || '',
     recipientState :  this.recipientState || '',
     recipientZipcode :  this.recipientZipcode || '',
-    recipientPhone :  this.recipientPhone || ''
+    recipientPhone :  this.recipientPhone || '',
+    recipientMessage :  this.recipientMessage || ''
+
   };
 };
 const Subscription = mongoose.model('Subscription', SubscriptionSchema);
