@@ -1,5 +1,5 @@
 'use strict';
-//const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
@@ -26,13 +26,13 @@ UserSchema.methods.serialize = function() {
   };
 };
 
-// UserSchema.methods.validatePassword = function(password) {
-//   return bcrypt.compare(password, this.password);
-// };
+UserSchema.methods.validatePassword = function(password) {
+  return bcrypt.compare(password, this.password);
+};
 
-// UserSchema.statics.hashPassword = function(password) {
-//   return bcrypt.hash(password, 10);
-// };
+UserSchema.statics.hashPassword = function(password) {
+  return bcrypt.hash(password, 10);
+};
 
 const SubscriptionSchema = mongoose.Schema({
   productCode: {type: String, default: ''},
@@ -98,4 +98,4 @@ SubscriptionSchema.set('toObject', {
     delete ret._id; // delete `_id`
   }
 });
-module.exports = {Subscription};
+module.exports = {User, Subscription};
