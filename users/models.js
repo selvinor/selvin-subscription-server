@@ -5,24 +5,27 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
 const UserSchema = mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
+  username: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
   firstName: {type: String, default: ''},
-  lastName: {type: String, default: ''}
+  lastName: {type: String, default: ''},
+  email: {type: String, default: ''},
+  phone: {type: String, default: ''},
+  subscriptions: [
+    {
+      subscription: { type: mongoose.Schema.Types.ObjectId, ref: 'Subscription' }
+    }
+  ]
 });
 
 UserSchema.methods.serialize = function() {
   return {
     username: this.username || '',
     firstName: this.firstName || '',
-    lastName: this.lastName || ''
+    lastName: this.lastName || '',
+    email: this.email|| '',
+    phone: this.phone|| '',
+    subscriptions: this.subscriptions|| ''
   };
 };
 
@@ -34,7 +37,21 @@ UserSchema.statics.hashPassword = function(password) {
   return bcrypt.hash(password, 10);
 };
 
+const User = mongoose.model('User', UserSchema);
+// Add `createdAt` and `updatedAt` fields
+UserSchema.set('timestamps', true);
+
+// Customize output for `res.json(data)`, `console.log(data)` etc.
+UserSchema.set('toObject', {
+  virtuals: true,     // include built-in virtual `id`
+  versionKey: false,  // remove `__v` version key
+  transform: (doc, ret) => {
+    delete ret._id; // delete `_id`
+  }
+});
+
 const SubscriptionSchema = mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   productCode: {type: String, default: ''},
   productName:{type: String, default: ''},
   productSize: {type: String, default: ''},
@@ -43,10 +60,10 @@ const SubscriptionSchema = mongoose.Schema({
   duration: {type: String, default: ''},
   startDate: {type: Date, default: null},
   color: {type: Boolean, default: true},
-  senderEmail: {type: String, default: ''},
+  /*senderEmail: {type: String, default: ''},
   senderFirstName: {type: String, default: ''},
   senderLastName: {type: String, default: ''},
-  senderPhone: {type: String, default: ''},
+  senderPhone: {type: String, default: ''},*/
   recipientFirstName : {type: String, default: ''},
   recipientLastName :  {type: String, default: ''},
   recipientCompany :  {type: String, default: ''},
@@ -61,6 +78,7 @@ const SubscriptionSchema = mongoose.Schema({
 
 SubscriptionSchema.methods.serialize = function() {
   return {
+    userId: this.userId || '',
     productCode: this.productCode || '',
     productName: this.productName || '',
     productSize: this.productSize || '',
@@ -69,10 +87,10 @@ SubscriptionSchema.methods.serialize = function() {
     duration: this.duration || '',
     startDate: this.startDate || '',
     color: this.color || '',
-    senderEmail: this.senderEmail || '',
+    /*senderEmail: this.senderEmail || '',
     senderFirstName: this.senderFirstName || '',
     senderLastName: this.senderLastName || '',
-    senderPhone: this.senderPhone || '',
+    senderPhone: this.senderPhone || '',*/
     recipientFirstName : this.recipientFirstName || '',
     recipientLastName :  this.recipientLastName || '',
     recipientCompany: this.recipientCompany || '',

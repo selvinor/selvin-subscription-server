@@ -6,8 +6,7 @@ const bodyParser = require('body-parser');
 const {Subscription} = require('./users/models');
 const mongoose = require('mongoose');
 const cors = require("cors");
-
-//const passport = require('passport');
+const passport = require('passport');
 
 const { PORT, CLIENT_ORIGIN } = require("./config");
 const jsonParser = bodyParser.json();
@@ -21,41 +20,53 @@ const jsonParser = bodyParser.json();
 const { router: usersRouter } = require('./users');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 
-
 mongoose.Promise = global.Promise;
 
 const { dbConnect } = require("./db-mongoose");
 //const {dbConnect} = require("./db-knex");
 
+const app = express();  
 
-
-const app = express();
-// Logging
-app.use(morgan('common'));
+// app.use(
+//   cors({
+//     origin: CLIENT_ORIGIN
+//   })
+// );
+// CORS
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
   if (req.method === 'OPTIONS') {
-    return res.send(204);
+    return res.sendStatus(204);
   }
   next();
 });
 
+passport.use(localStrategy);
+passport.use(jwtStrategy);
 
+app.use('/api/users/', usersRouter);
+app.use('/api/auth/', authRouter);
+
+const jwtAuth = passport.authenticate('jwt', { session: false });
+
+// A protected endpoint which needs a valid JWT to access it
+// app.get('/api/protected', jwtAuth, (req, res) => {
+//   return res.json({
+//     data: 'rosebud'
+//   });
+// });
+// Logging
+//app.use(morgan('common'));
 app.use(
   morgan(process.env.NODE_ENV === "production" ? "common" : "dev", {
     skip: (req, res) => process.env.NODE_ENV === "test"
   })
 );
 
-app.use(
-  cors({
-    origin: CLIENT_ORIGIN
-  })
-);
 
-app.get("/api/subscriptions", (req, res, next) => {
+app.get("/api/protected/subscriptions", jwtAuth, (req, res, next) => {
   Subscription.find()
   .then(results => {
     res.json(results);  //
@@ -67,18 +78,18 @@ app.get("/api/subscriptions", (req, res, next) => {
   //const subscriptions = getSubscriptions()
 
   });
-  app.get('/api/subscriptions/:id', jsonParser, (req, res, next) => {
+  app.get('/api/protected/subscriptions/:id', jwtAuth, jsonParser, (req, res, next) => {
     const { id } = req.params;
-    //const userId = req.user.id;
-  
+    const userId = req.user.id;
+  console.log('req: ', req);
     if (!mongoose.Types.ObjectId.isValid(id)) {
       const err = new Error('The `id` is not valid');
       err.status = 400;
       return next(err);
     }
-    Subscription.findOne({ _id: id})  
-   // Subscription.findOne({ _id: id, userId })
-      //.populate('recipients')
+    //Subscription.findOne({ _id: id})  
+    Subscription.findOne({ _id: id, userId })
+      .populate('recipients')
       .then(result => {
         if (result) {
           res.json(result);
@@ -93,11 +104,8 @@ app.get("/api/subscriptions", (req, res, next) => {
   
   app.post("/api/subscriptions", jsonParser, (req, res, next) => {
     console.log('req.body: ', req.body);
-    const { productCode, productName, frequency, duration, startDate, senderEmail, senderFirstName, senderLastName, senderPhone, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage } = req.body;
-    const newSubscription = { productCode, productName, frequency, duration, startDate, senderEmail, senderFirstName, senderLastName, senderPhone, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage  };
-    
- 
-  
+    const { userId, productCode, productName, frequency, duration, startDate, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage } = req.body;
+    const newSubscription = { userId, productCode, productName, frequency, duration, startDate, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage  };  
     Subscription.create(newSubscription) //
       .then(result => {
         res
@@ -113,7 +121,7 @@ app.put('/api/subscriptions/:id', jsonParser,  (req, res, next) => {
   console.log('put called. req.body = ', req.body);
 
   const updateSubscription = {};
-  const updateFields = [productCode, startDate, senderEmail, senderFirstName, senderLastName, senderPhone, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage];
+  const updateFields = [productCode, startDate, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage];
 
   updateFields.forEach(field => {
     if (field in req.body) {
@@ -137,10 +145,10 @@ app.put('/api/subscriptions/:id', jsonParser,  (req, res, next) => {
     });
   });
 // when DELETE request comes in with an id in path,
-// try to delete that item from ShoppingList.
+// try to delete that item 
   app.delete('/api/subscriptions/:id', (req, res, next) => {
     const { id } = req.params;
-    //const userId = req.user.id;
+    const userId = req.user.id;
   
     /***** Never trust users - validate input *****/
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -148,8 +156,8 @@ app.put('/api/subscriptions/:id', jsonParser,  (req, res, next) => {
       err.status = 400;
       return next(err);
     }
-    Subscription.deleteOne({ _id: id})
-   // Subscription.deleteOne({ _id: id, userId })
+    //Subscription.deleteOne({ _id: id})
+    Subscription.deleteOne({ _id: id, userId })
       .then(result => {
         if (result.n) {
           res.sendStatus(204);
@@ -172,6 +180,7 @@ function runServer(port = PORT) {
       console.error(err);
     });
 }
+
 
 if (require.main === module) {
   dbConnect();
