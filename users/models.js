@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 
-const UserSchema = mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   firstName: {type: String, default: ''},
@@ -46,24 +46,21 @@ UserSchema.set('toObject', {
   virtuals: true,     // include built-in virtual `id`
   versionKey: false,  // remove `__v` version key
   transform: (doc, ret) => {
-    delete ret._id; // delete `_id`
+  //  delete ret._id; // delete `_id`
+    delete ret.password; // delete `_id`
   }
 });
 
-const SubscriptionSchema = mongoose.Schema({
+const SubscriptionSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   productCode: {type: String, default: ''},
   productName:{type: String, default: ''},
   productSize: {type: String, default: ''},
   status: {type: String, default: 'active'},
-  frequency:{type: String, default: ''},
   duration: {type: String, default: ''},
+  frequency:{type: String, default: ''},
   startDate: {type: Date, default: null},
   color: {type: Boolean, default: true},
-  /*senderEmail: {type: String, default: ''},
-  senderFirstName: {type: String, default: ''},
-  senderLastName: {type: String, default: ''},
-  senderPhone: {type: String, default: ''},*/
   recipientFirstName : {type: String, default: ''},
   recipientLastName :  {type: String, default: ''},
   recipientCompany :  {type: String, default: ''},
@@ -83,14 +80,10 @@ SubscriptionSchema.methods.serialize = function() {
     productName: this.productName || '',
     productSize: this.productSize || '',
     status: this.status || '',
-    frequency: this.frequency || '',
     duration: this.duration || '',
+    frequency: this.frequency || '',
     startDate: this.startDate || '',
     color: this.color || '',
-    /*senderEmail: this.senderEmail || '',
-    senderFirstName: this.senderFirstName || '',
-    senderLastName: this.senderLastName || '',
-    senderPhone: this.senderPhone || '',*/
     recipientFirstName : this.recipientFirstName || '',
     recipientLastName :  this.recipientLastName || '',
     recipientCompany: this.recipientCompany || '',
@@ -113,7 +106,7 @@ SubscriptionSchema.set('toObject', {
   virtuals: true,     // include built-in virtual `id`
   versionKey: false,  // remove `__v` version key
   transform: (doc, ret) => {
-    delete ret._id; // delete `_id`
+//    delete ret._id; // delete `_id`
   }
 });
 module.exports = {User, Subscription};
