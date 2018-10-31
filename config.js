@@ -1,6 +1,5 @@
 'use strict';
-//mongoimport -h ds151602.mlab.com:51602 -d testdb10 -c subscriptions  -u dev -p breaktheinternet1  --file subscriptions.json
-//mongoimport -h ds151602.mlab.com:51602 -d testdb10 -c users  -u dev -p breaktheinternet1  --file users.json
+
 module.exports = {
   PORT: process.env.PORT || 8080,
   CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || 'http://localhost:3000',

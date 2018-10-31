@@ -46,7 +46,7 @@ UserSchema.set('toObject', {
   virtuals: true,     // include built-in virtual `id`
   versionKey: false,  // remove `__v` version key
   transform: (doc, ret) => {
-  //  delete ret._id; // delete `_id`
+    delete ret._id; // delete `_id`
     delete ret.password; // delete `_id`
   }
 });
@@ -57,9 +57,9 @@ const SubscriptionSchema = new mongoose.Schema({
   productName:{type: String, default: ''},
   productSize: {type: String, default: ''},
   status: {type: String, default: 'active'},
+  startDate: {type: Date, default: null},
   duration: {type: String, default: ''},
   frequency:{type: String, default: ''},
-  startDate: {type: Date, default: null},
   color: {type: Boolean, default: true},
   recipientFirstName : {type: String, default: ''},
   recipientLastName :  {type: String, default: ''},
@@ -80,9 +80,9 @@ SubscriptionSchema.methods.serialize = function() {
     productName: this.productName || '',
     productSize: this.productSize || '',
     status: this.status || '',
+    startDate: this.startDate || '',
     duration: this.duration || '',
     frequency: this.frequency || '',
-    startDate: this.startDate || '',
     color: this.color || '',
     recipientFirstName : this.recipientFirstName || '',
     recipientLastName :  this.recipientLastName || '',
@@ -106,7 +106,7 @@ SubscriptionSchema.set('toObject', {
   virtuals: true,     // include built-in virtual `id`
   versionKey: false,  // remove `__v` version key
   transform: (doc, ret) => {
-//    delete ret._id; // delete `_id`
+    delete ret._id; // delete `_id`
   }
 });
 module.exports = {User, Subscription};
