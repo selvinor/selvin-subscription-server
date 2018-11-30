@@ -5,6 +5,8 @@ module.exports = {
   CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || 'http://localhost:3000',
   DATABASE_URL:
         process.env.DATABASE_URL || 'mongodb://dev:breaktheinternet1@ds151602.mlab.com:51602/testdb10',
+  MONGODB_URI: 
+  process.env.DATABASE_URL || 'mongodb://dev:breaktheinternet1@ds151602.mlab.com:51602/testdb10',
   TEST_DATABASE_URL:
         process.env.TEST_DATABASE_URL ||
         'mongodb://localhost/thinkful-backend-test',
