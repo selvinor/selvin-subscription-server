@@ -1,6 +1,6 @@
  [{
    "_id": "111111111111111111111100",
-   "username": "himking",
+   "userName": "himking",
    "firstName": "Him",
    "lastName": "King",
    "email": "himking@fakeemail.com",
@@ -12,7 +12,7 @@
  },
  {
    "_id": "111111111111111111111101",
-   "username": "bazz",
+   "userName": "bazz",
    "lastName": "Zax",
    "firstName": "Bazz",
    "email": "bazz@fakeemail.com",
@@ -27,7 +27,7 @@
  },
  {
    "_id": "111111111111111111111102",
-   "username": "bifoo",
+   "userName": "bifoo",
    "firstName": "Bifoo",
    "lastName": "Baf",
    "email": "bifoo@fakeemail.com",
@@ -41,7 +41,7 @@
  },
  {
    "_id": "111111111111111111111103",
-   "username": "bax",
+   "userName": "bax",
    "firstName": "Bax",
    "lastName": "Dafmoz",
    "email": "bax@fakeemail.com",
@@ -56,7 +56,7 @@
  },
  {
    "_id": "111111111111111111111104",
-   "username": "foo",
+   "userName": "foo",
    "firstName": "Foo",
    "lastName": "Bat",
    "email": "foo@fakeemail.com",
@@ -70,7 +70,7 @@
  },
  {
    "_id": "111111111111111111111105",
-   "username": "bar",
+   "userName": "bar",
    "firstName": "Bar",
    "lastName": "Bix",
    "email": "bar@fakeemail.com",
@@ -85,7 +85,7 @@
  },
  {
    "_id": "111111111111111111111106",
-   "username": "bix",
+   "userName": "bix",
    "firstName": "Bix",
    "lastName": "Foo",
    "email": "bix@fakeemail.com",
