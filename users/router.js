@@ -10,6 +10,7 @@ const jsonParser = bodyParser.json();
 
 // Post to register a new user
 router.post('/', jsonParser, (req, res) => {
+  console.log('**router.post');
   const requiredFields = ['username', 'password'];
   const missingField = requiredFields.find(field => !(field in req.body));
 
@@ -92,56 +93,90 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  let {username, password, firstName = '', lastName = ''} = req.body;
+  let {username, password, firstName = '', lastName = '', email} = req.body;
   // Username and password come in pre-trimmed, otherwise we throw an error
   // before this
   firstName = firstName.trim();
   lastName = lastName.trim();
-
-  return User.find({username})
-    .count()
-    .then(count => {
-      if (count > 0) {
-        // There is an existing user with the same username
-        return Promise.reject({
-          code: 422,
-          reason: 'ValidationError',
-          message: 'Username already taken',
-          location: 'username'
-        });
-      }
-      // If there is no existing user, hash the password
-      return User.hashPassword(password);
-    })
-    .then(hash => {
-      return User.create({
+  return User.hashPassword(password)
+    .then(digest => {
+      const newUser = {
         username,
-        password: hash,
+        password: digest,  
         firstName,
-        lastName
-      });
+        lastName,
+        email
+      };
+      return User.create(newUser);
     })
-    .then(user => {
-      return res.status(201).json(user.serialize());
+    .then(result => {
+      return res
+        .status(201)
+        .location(`/api/users/${result.id}`)
+        .json(result);
     })
     .catch(err => {
-      // Forward validation errors on to the client, otherwise give a 500
-      // error because something unexpected has happened
-      if (err.reason === 'ValidationError') {
-        return res.status(err.code).json(err);
+      if (err.code === 11000) {
+        err = new Error('The username already exists');
+        err.status = 400;
+        err.reason = 'ValidationError';
       }
+      console.log('err.code: ', err.code);
       res.status(500).json({code: 500, message: 'Internal server error'});
     });
 });
+ 
+  // return User.find({username})
+  //   .count()
+  //   .then(count => {
+  //     if (count > 0) {
+  //       // There is an existing user with the same username
+  //       return Promise.reject({
+  //         code: 422,
+  //         reason: 'ValidationError',
+  //         message: 'Username already taken',
+  //         location: 'username'
+  //       });
+  //     }
+  //     // If there is no existing user, hash the password
+  //     console.log('user name is available');
+//       return User.hashPassword(password);
+//     })
+//     .then(hash => {
+//       const newUser = {
+//         username,
+//         password: digest,  
+//         firstName,
+//         lastName,
+//         email
+//       };
+//       return User.create(newUser);
+//     })
+//     .then(user => {
+//       return res
+//         .status(201)
+//         .location(`/api/users/${result.id}`)
+//         .json(result);
+//     })
+//     .catch(err => {
+//       // Forward validation errors on to the client, otherwise give a 500
+//       // error because something unexpected has happened
+//       if (err.reason === 'ValidationError') {
+//         return res.status(err.code).json(err);
+//       }
+//       // res.status(500).json({code: 500, message: 'Internal server error'});
+//       next(err);
+//     });
+// });
 
 // // Never expose all your users like below in a prod application
 // // we're just doing this so we have a quick way to see
 // // if we're creating users. keep in mind, you can also
 // // verify this in the Mongo shell.
-// router.get('/', (req, res) => {
-//   return User.find()
-//     .then(users => res.json(users.map(user => user.serialize())))
-//     .catch(err => res.status(500).json({message: 'Internal server error'}));
-// });
+router.get('/', (req, res) => {
+  return User.find()
+    .then(users => res.json(users.map(user => user.serialize())))
+    .catch(err => res.status(500).json({message: 'Internal server error'}));
+});
 
 module.exports = {router};
