@@ -24,9 +24,11 @@ mongoose.Promise = global.Promise;
 
 const { dbConnect } = require("./db-mongoose");
 //const {dbConnect} = require("./db-knex");
+const jwtAuth = passport.authenticate('jwt', { session: false });
 
 const app = express();  
-
+passport.use(localStrategy);
+passport.use(jwtStrategy);
 // app.use(
 //   cors({
 //     origin: CLIENT_ORIGIN
@@ -43,13 +45,12 @@ app.use(function (req, res, next) {
   next();
 });
 
-passport.use(localStrategy);
-passport.use(jwtStrategy);
+
 
 app.use('/api/users/', usersRouter);
 app.use('/api/auth/', authRouter);
 
-const jwtAuth = passport.authenticate('jwt', { session: false });
+
 
 // A protected endpoint which needs a valid JWT to access it
 // app.get('/api/protected', jwtAuth, (req, res) => {
@@ -65,6 +66,7 @@ app.use(
   })
 );
 
+//app.use('/', passport.authenticate('jwt', { session: false, failWithError: true }));
 
 app.get("/api/protected/subscriptions", jwtAuth, (req, res, next) => {
   Subscription.find()
@@ -102,11 +104,12 @@ app.get("/api/protected/subscriptions", jwtAuth, (req, res, next) => {
       });
   });
   
-  app.post("/api/subscriptions", jsonParser, (req, res, next) => {
-    console.log('subcriptions req.body: ', req.body);
+  app.post("/api/subscriptions",  jsonParser, (req, res, next) => {
     console.log('subscriptions req.user: ', req.user);
+    console.log('subcriptions req.body: ', req.body);
+    const userId = req.user.id;
     const { productCode, productName, frequency, duration, startDate, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage } = req.body;
-    const newSubscription = {  productCode, productName, frequency, duration, startDate, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage  };  
+    const newSubscription = { userId, productCode, productName, frequency, duration, startDate, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage  };  
     Subscription.create(newSubscription) //
       .then(result => {
         res
