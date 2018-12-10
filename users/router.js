@@ -23,7 +23,7 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  const stringFields = ['userName', 'password', 'firstName', 'lastName'];
+  const stringFields = ['userName', 'password', 'firstName', 'lastName', 'phone'];
   const nonStringField = stringFields.find(
     field => field in req.body && typeof req.body[field] !== 'string'
   );
@@ -93,19 +93,33 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  let {userName, password, firstName = '', lastName = '', email} = req.body;
+  let {userName, password, firstName = '', lastName = '', email, phone} = req.body;
   // Username and password come in pre-trimmed, otherwise we throw an error
   // before this
   firstName = firstName.trim();
   lastName = lastName.trim();
-  return User.hashPassword(password)
+	return User.find({ userName })
+		.count()
+		.then(count => {
+			if (count > 0) {
+				return Promise.reject({
+					code: 422,
+					reason: 'ValidationError',
+					message: 'Username already taken',
+					location: 'userName'
+				});
+			}
+			return User.hashPassword(password);
+		})
+
     .then(digest => {
       const newUser = {
         userName,
         password: digest,  
         firstName,
         lastName,
-        email
+        email, 
+        phone
       };
       return User.create(newUser);
     })
@@ -126,57 +140,14 @@ router.post('/', jsonParser, (req, res) => {
     });
 });
  
-  // return User.find({userName})
-  //   .count()
-  //   .then(count => {
-  //     if (count > 0) {
-  //       // There is an existing user with the same userName
-  //       return Promise.reject({
-  //         code: 422,
-  //         reason: 'ValidationError',
-  //         message: 'Username already taken',
-  //         location: 'userName'
-  //       });
-  //     }
-  //     // If there is no existing user, hash the password
-  //     console.log('user name is available');
-//       return User.hashPassword(password);
-//     })
-//     .then(hash => {
-//       const newUser = {
-//         userName,
-//         password: digest,  
-//         firstName,
-//         lastName,
-//         email
-//       };
-//       return User.create(newUser);
-//     })
-//     .then(user => {
-//       return res
-//         .status(201)
-//         .location(`/api/users/${result.id}`)
-//         .json(result);
-//     })
-//     .catch(err => {
-//       // Forward validation errors on to the client, otherwise give a 500
-//       // error because something unexpected has happened
-//       if (err.reason === 'ValidationError') {
-//         return res.status(err.code).json(err);
-//       }
-//       // res.status(500).json({code: 500, message: 'Internal server error'});
-//       next(err);
-//     });
-// });
-
 // // Never expose all your users like below in a prod application
 // // we're just doing this so we have a quick way to see
 // // if we're creating users. keep in mind, you can also
 // // verify this in the Mongo shell.
-router.get('/', (req, res) => {
-  return User.find()
-    .then(users => res.json(users.map(user => user.serialize())))
-    .catch(err => res.status(500).json({message: 'Internal server error'}));
-});
+// router.get('/', (req, res) => {
+//   return User.find()
+//     .then(users => res.json(users.map(user => user.serialize())))
+//     .catch(err => res.status(500).json({message: 'Internal server error'}));
+// });
 
 module.exports = {router};

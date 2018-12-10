@@ -5,11 +5,28 @@ const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   userName: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true},
-  password: { type: String, required: true }
-
+  password: { type: String, required: true },
+  firstName: {type: String, default: ''},
+  lastName: {type: String, default: ''},
+  email: {type: String, default: ''},
+  phone: {type: String, default: ''},
+  subscriptions: [
+    {
+      subscription: { type: mongoose.Schema.Types.ObjectId, ref: 'Subscription' }
+    }
+  ]
 });
 
+UserSchema.methods.serialize = function() {
+  return {
+    userName: this.userName || '',
+    firstName: this.firstName || '',
+    lastName: this.lastName || '',
+    email: this.email|| '',
+    phone: this.phone|| '',
+    subscriptions: this.subscriptions|| ''
+  };
+};
 userSchema.set('toObject', {
   virtuals: true,
   versionKey: false, 
