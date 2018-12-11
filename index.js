@@ -83,7 +83,7 @@ app.get("/api/protected/subscriptions", jwtAuth, (req, res, next) => {
   app.get('/api/protected/subscriptions/:id', jwtAuth, jsonParser, (req, res, next) => {
     const { id } = req.params;
     const userId = req.user.id;
-  console.log('req: ', req);
+  // console.log('req: ', req);
     if (!mongoose.Types.ObjectId.isValid(id)) {
       const err = new Error('The `id` is not valid');
       err.status = 400;
@@ -104,10 +104,10 @@ app.get("/api/protected/subscriptions", jwtAuth, (req, res, next) => {
       });
   });
   
-  app.post("/api/protected/subscriptions", jwtAuth, jsonParser, (req, res, next) => {
-
+  // app.post("/api/protected/subscriptions", jwtAuth, jsonParser, (req, res, next) => {
+    app.post("/api/subscriptions",  jsonParser, (req, res, next) => {
     console.log('subcriptions req.body: ', req.body);
-    console.log('subscriptions req.user._id: ', req.user._id);
+    //console.log('subscriptions req.user._id: ', req.user._id);
     // const userId = req.user._id;
     //const userId = req.user._id;
     const { userId,  productCode, productName, frequency, duration, startDate, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage } = req.body;
@@ -124,7 +124,7 @@ app.get("/api/protected/subscriptions", jwtAuth, (req, res, next) => {
       });
   });
 app.put('/api/subscriptions/:id', jsonParser,  (req, res, next) => {
-  console.log('put called. req.body = ', req.body);
+  // console.log('put called. req.body = ', req.body);
 
   const updateSubscription = {};
   const updateFields = [productCode, startDate, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage];
@@ -136,11 +136,11 @@ app.put('/api/subscriptions/:id', jsonParser,  (req, res, next) => {
   });
   const id = req.params.id;
 
-  console.log(`Updating subscription \`${req.params.id}\``);
+  // console.log(`Updating subscription \`${req.params.id}\``);
   Subscription.findByIdAndUpdate(id, updateSubscription, { new: true })
     .then(result => {
       if (result) {
-        console.log('put request response is: ', res);
+        // console.log('put request response is: ', res);
         res.json(result);
       } else {
         next();

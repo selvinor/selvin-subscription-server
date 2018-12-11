@@ -10,7 +10,7 @@ const jsonParser = bodyParser.json();
 
 // Post to register a new user
 router.post('/', jsonParser, (req, res) => {
-  console.log('**router.post');
+  // console.log('**router.post');
   const requiredFields = ['username', 'password'];
   const missingField = requiredFields.find(field => !(field in req.body));
 
@@ -135,7 +135,7 @@ router.post('/', jsonParser, (req, res) => {
       //   err.status = 400;
       //   err.reason = 'ValidationError';
       // }
-      console.log('err: ', err);
+      // console.log('err: ', err);
       res.status(500).json({code: 500, message: 'Internal server error'});
     });
 });
