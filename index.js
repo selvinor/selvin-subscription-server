@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require('body-parser');
-const {Subscription} = require('./users/models');
+const {Subscription} = require('./models/subscriptions');
 const mongoose = require('mongoose');
 const cors = require("cors");
 const passport = require('passport');
@@ -24,15 +24,17 @@ mongoose.Promise = global.Promise;
 
 const { dbConnect } = require("./db-mongoose");
 //const {dbConnect} = require("./db-knex");
+const jwtAuth = passport.authenticate('jwt', { session: false });
 
 const app = express();  
+passport.use(localStrategy);
+passport.use(jwtStrategy);
+app.use(
+  cors({
+    origin: CLIENT_ORIGIN
+  })
+);
 
-// app.use(
-//   cors({
-//     origin: CLIENT_ORIGIN
-//   })
-// );
-// CORS
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
@@ -43,13 +45,12 @@ app.use(function (req, res, next) {
   next();
 });
 
-passport.use(localStrategy);
-passport.use(jwtStrategy);
+
 
 app.use('/api/users/', usersRouter);
 app.use('/api/auth/', authRouter);
 
-const jwtAuth = passport.authenticate('jwt', { session: false });
+
 
 // A protected endpoint which needs a valid JWT to access it
 // app.get('/api/protected', jwtAuth, (req, res) => {
@@ -65,6 +66,7 @@ app.use(
   })
 );
 
+//app.use('/', passport.authenticate('jwt', { session: false, failWithError: true }));
 
 app.get("/api/protected/subscriptions", jwtAuth, (req, res, next) => {
   Subscription.find()
@@ -81,7 +83,7 @@ app.get("/api/protected/subscriptions", jwtAuth, (req, res, next) => {
   app.get('/api/protected/subscriptions/:id', jwtAuth, jsonParser, (req, res, next) => {
     const { id } = req.params;
     const userId = req.user.id;
-  console.log('req: ', req);
+  // console.log('req: ', req);
     if (!mongoose.Types.ObjectId.isValid(id)) {
       const err = new Error('The `id` is not valid');
       err.status = 400;
@@ -102,9 +104,13 @@ app.get("/api/protected/subscriptions", jwtAuth, (req, res, next) => {
       });
   });
   
-  app.post("/api/subscriptions", jsonParser, (req, res, next) => {
-    console.log('req.body: ', req.body);
-    const { userId, productCode, productName, frequency, duration, startDate, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage } = req.body;
+  // app.post("/api/protected/subscriptions", jwtAuth, jsonParser, (req, res, next) => {
+    app.post("/api/subscriptions",  jsonParser, (req, res, next) => {
+    console.log('subcriptions req.body: ', req.body);
+    //console.log('subscriptions req.user._id: ', req.user._id);
+    // const userId = req.user._id;
+    //const userId = req.user._id;
+    const { userId,  productCode, productName, frequency, duration, startDate, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage } = req.body;
     const newSubscription = { userId, productCode, productName, frequency, duration, startDate, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage  };  
     Subscription.create(newSubscription) //
       .then(result => {
@@ -118,7 +124,7 @@ app.get("/api/protected/subscriptions", jwtAuth, (req, res, next) => {
       });
   });
 app.put('/api/subscriptions/:id', jsonParser,  (req, res, next) => {
-  console.log('put called. req.body = ', req.body);
+  // console.log('put called. req.body = ', req.body);
 
   const updateSubscription = {};
   const updateFields = [productCode, startDate, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage];
@@ -130,11 +136,11 @@ app.put('/api/subscriptions/:id', jsonParser,  (req, res, next) => {
   });
   const id = req.params.id;
 
-  console.log(`Updating subscription \`${req.params.id}\``);
+  // console.log(`Updating subscription \`${req.params.id}\``);
   Subscription.findByIdAndUpdate(id, updateSubscription, { new: true })
     .then(result => {
       if (result) {
-        console.log('put request response is: ', res);
+        // console.log('put request response is: ', res);
         res.json(result);
       } else {
         next();

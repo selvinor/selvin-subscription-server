@@ -8,6 +8,7 @@ const config = require('../config');
 const router = express.Router();
 
 const createAuthToken = function(user) {
+  // console.log('creating token');
   return jwt.sign({user}, config.JWT_SECRET, {
     subject: user.username,
     expiresIn: config.JWT_EXPIRY,
