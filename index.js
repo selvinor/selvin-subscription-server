@@ -29,12 +29,12 @@ const jwtAuth = passport.authenticate('jwt', { session: false });
 const app = express();  
 passport.use(localStrategy);
 passport.use(jwtStrategy);
-// app.use(
-//   cors({
-//     origin: CLIENT_ORIGIN
-//   })
-// );
-// CORS
+app.use(
+  cors({
+    origin: CLIENT_ORIGIN
+  })
+);
+
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
@@ -107,10 +107,10 @@ app.get("/api/protected/subscriptions", jwtAuth, (req, res, next) => {
   app.post("/api/protected/subscriptions", jwtAuth, jsonParser, (req, res, next) => {
 
     console.log('subcriptions req.body: ', req.body);
-    console.log('subscriptions req.user: ', req.user);
-    const userId = req.user._id;
-    
-    const { productCode, productName, frequency, duration, startDate, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage } = req.body;
+    console.log('subscriptions req.user._id: ', req.user._id);
+    // const userId = req.user._id;
+    //const userId = req.user._id;
+    const { userId,  productCode, productName, frequency, duration, startDate, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage } = req.body;
     const newSubscription = { userId, productCode, productName, frequency, duration, startDate, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage  };  
     Subscription.create(newSubscription) //
       .then(result => {

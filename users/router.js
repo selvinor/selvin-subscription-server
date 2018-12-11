@@ -23,7 +23,7 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  const stringFields = ['username', 'password', 'firstName', 'lastName', 'phone'];
+  const stringFields = ['username', 'password', 'firstName', 'lastName', 'email', 'phone'];
   const nonStringField = stringFields.find(
     field => field in req.body && typeof req.body[field] !== 'string'
   );
@@ -130,12 +130,12 @@ router.post('/', jsonParser, (req, res) => {
         .json(result);
     })
     .catch(err => {
-      if (err.code === 11000) {
-        err = new Error('The username already exists');
-        err.status = 400;
-        err.reason = 'ValidationError';
-      }
-      console.log('err.code: ', err.code);
+      // if (err.code === 11000) {
+      //   err = new Error('The username already exists');
+      //   err.status = 400;
+      //   err.reason = 'ValidationError';
+      // }
+      console.log('err: ', err);
       res.status(500).json({code: 500, message: 'Internal server error'});
     });
 });
