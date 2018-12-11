@@ -4,8 +4,8 @@ const mongoose = require('mongoose');
 
 const { MONGODB_URI } = require('../config');
 
-const Subscription = require('../users/models');
-const User = require('../users/models');
+const Subscription = require('../models/subscriptions');
+const User = require('../models/users');
 
 const seedSubscriptions = require('../db/seed/subscriptions');
 const seedUsers = require('../db/seed/users');

@@ -2,7 +2,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const {User} = require('./models');
+const User = require('../models/users');
 
 const router = express.Router();
 
@@ -11,7 +11,7 @@ const jsonParser = bodyParser.json();
 // Post to register a new user
 router.post('/', jsonParser, (req, res) => {
   console.log('**router.post');
-  const requiredFields = ['userName', 'password'];
+  const requiredFields = ['username', 'password'];
   const missingField = requiredFields.find(field => !(field in req.body));
 
   if (missingField) {
@@ -23,7 +23,7 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  const stringFields = ['userName', 'password', 'firstName', 'lastName', 'phone'];
+  const stringFields = ['username', 'password', 'firstName', 'lastName', 'phone'];
   const nonStringField = stringFields.find(
     field => field in req.body && typeof req.body[field] !== 'string'
   );
@@ -37,14 +37,14 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  // If the userName and password aren't trimmed we give an error.  Users might
+  // If the username and password aren't trimmed we give an error.  Users might
   // expect that these will work without trimming (i.e. they want the password
   // "foobar ", including the space at the end).  We need to reject such values
   // explicitly so the users know what's happening, rather than silently
   // trimming them and expecting the user to understand.
   // We'll silently trim the other fields, because they aren't credentials used
   // to log in, so it's less of a problem.
-  const explicityTrimmedFields = ['userName', 'password'];
+  const explicityTrimmedFields = ['username', 'password'];
   const nonTrimmedField = explicityTrimmedFields.find(
     field => req.body[field].trim() !== req.body[field]
   );
@@ -59,7 +59,7 @@ router.post('/', jsonParser, (req, res) => {
   }
 
   const sizedFields = {
-    userName: {
+    username: {
       min: 1
     },
     password: {
@@ -93,12 +93,12 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  let {userName, password, firstName = '', lastName = '', email, phone} = req.body;
+  let {username, password, firstName = '', lastName = '', email, phone} = req.body;
   // Username and password come in pre-trimmed, otherwise we throw an error
   // before this
   firstName = firstName.trim();
   lastName = lastName.trim();
-	return User.find({ userName })
+	return User.find({ username })
 		.count()
 		.then(count => {
 			if (count > 0) {
@@ -106,7 +106,7 @@ router.post('/', jsonParser, (req, res) => {
 					code: 422,
 					reason: 'ValidationError',
 					message: 'Username already taken',
-					location: 'userName'
+					location: 'username'
 				});
 			}
 			return User.hashPassword(password);
@@ -114,7 +114,7 @@ router.post('/', jsonParser, (req, res) => {
 
     .then(digest => {
       const newUser = {
-        userName,
+        username,
         password: digest,  
         firstName,
         lastName,
@@ -131,7 +131,7 @@ router.post('/', jsonParser, (req, res) => {
     })
     .catch(err => {
       if (err.code === 11000) {
-        err = new Error('The userName already exists');
+        err = new Error('The username already exists');
         err.status = 400;
         err.reason = 'ValidationError';
       }

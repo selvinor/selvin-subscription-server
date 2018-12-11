@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require('body-parser');
-const {Subscription} = require('./users/models');
+const {Subscription} = require('./models/subscriptions');
 const mongoose = require('mongoose');
 const cors = require("cors");
 const passport = require('passport');
@@ -104,10 +104,12 @@ app.get("/api/protected/subscriptions", jwtAuth, (req, res, next) => {
       });
   });
   
-  app.post("/api/subscriptions",  jsonParser, (req, res, next) => {
-    console.log('subscriptions req.user: ', req.user);
+  app.post("/api/protected/subscriptions", jwtAuth, jsonParser, (req, res, next) => {
+
     console.log('subcriptions req.body: ', req.body);
-    const userId = req.user.id;
+    console.log('subscriptions req.user: ', req.user);
+    const userId = req.user._id;
+    
     const { productCode, productName, frequency, duration, startDate, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage } = req.body;
     const newSubscription = { userId, productCode, productName, frequency, duration, startDate, recipientFirstName, recipientLastName, recipientCompany, recipientStreetAddress, recipientAptSuite, recipientCity, recipientState, recipientZipcode, recipientPhone, recipientMessage  };  
     Subscription.create(newSubscription) //
