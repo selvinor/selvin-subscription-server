@@ -27,6 +27,8 @@ const { dbConnect } = require("./db-mongoose");
 const jwtAuth = passport.authenticate('jwt', { session: false });
 
 const app = express();  
+passport.use(localStrategy);
+passport.use(jwtStrategy);
 // Logging
 //app.use(morgan('common'));
 app.use(
@@ -35,28 +37,11 @@ app.use(
   })
 );
 
-passport.use(localStrategy);
-passport.use(jwtStrategy);
 app.use(
   cors({
     origin: CLIENT_ORIGIN
   })
 );
-
-app.use(cors());
-
-app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-  res.header('Access-Control-Allow-Origin', 'https://blooms-pdx.herokuapp.com');
-  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
-  }
-  next();
-});
-
 
 
 app.use('/api/users/', usersRouter);
@@ -181,6 +166,17 @@ app.put('/api/subscriptions/:id', jsonParser,  (req, res, next) => {
       });
   });
    
+
+  app.use(function (req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(204);
+    }
+    next();
+  });
+
 function runServer(port = PORT) {
   const server = app
     .listen(port, () => {
