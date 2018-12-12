@@ -27,6 +27,14 @@ const { dbConnect } = require("./db-mongoose");
 const jwtAuth = passport.authenticate('jwt', { session: false });
 
 const app = express();  
+// Logging
+//app.use(morgan('common'));
+app.use(
+  morgan(process.env.NODE_ENV === "production" ? "common" : "dev", {
+    skip: (req, res) => process.env.NODE_ENV === "test"
+  })
+);
+
 passport.use(localStrategy);
 passport.use(jwtStrategy);
 app.use(
@@ -35,15 +43,15 @@ app.use(
   })
 );
 
-app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
-  }
-  next();
-});
+// app.use(function (req, res, next) {
+//   res.header('Access-Control-Allow-Origin', '*');
+//   res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+//   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
+//   if (req.method === 'OPTIONS') {
+//     return res.sendStatus(204);
+//   }
+//   next();
+// });
 
 
 
@@ -58,13 +66,6 @@ app.use('/api/auth/', authRouter);
 //     data: 'rosebud'
 //   });
 // });
-// Logging
-//app.use(morgan('common'));
-app.use(
-  morgan(process.env.NODE_ENV === "production" ? "common" : "dev", {
-    skip: (req, res) => process.env.NODE_ENV === "test"
-  })
-);
 
 //app.use('/', passport.authenticate('jwt', { session: false, failWithError: true }));
 
