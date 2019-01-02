@@ -47,11 +47,11 @@ app.use(function (req, res, next) {
   next();
 });
 
-// app.use(
-//   cors({
-//     origin: CLIENT_ORIGIN
-//   })
-// );
+app.use(
+  cors({
+    origin: 'https://blooms-pdx-server.herokuapp.com'
+  })
+);
 
 passport.use(localStrategy);
 passport.use(jwtStrategy);
