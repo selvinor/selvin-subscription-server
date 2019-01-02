@@ -36,7 +36,7 @@ app.use(
     skip: (req, res) => process.env.NODE_ENV === "test"
   })
 );
-
+console.log("CLIENT_ORIGIN: ", CLIENT_ORIGIN);
 app.use(
   cors({
     origin: CLIENT_ORIGIN
