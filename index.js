@@ -47,7 +47,6 @@ app.use(function (req, res, next) {
   next();
 });
 
-console.log("CLIENT_ORIGIN: ", CLIENT_ORIGIN);
 app.use(
   cors({
     origin: CLIENT_ORIGIN
