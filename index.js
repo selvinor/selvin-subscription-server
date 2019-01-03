@@ -49,7 +49,7 @@ app.use(function (req, res, next) {
 
 app.use(
   cors({
-    origin: 'https://blooms-pdx-server.herokuapp.com'
+    origin: 'https://blooms-pdx.herokuapp.com'
   })
 );
 
