@@ -35,7 +35,7 @@ app.use(
     skip: (req, res) => process.env.NODE_ENV === "test"
   })
 );
-
+console.log("CLIENT_ORIGIN: ", CLIENT_ORIGIN);
 //CORS
 app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -47,9 +47,10 @@ app.use(function (req, res, next) {
   next();
 });
 
+
 app.use(
   cors({
-    origin: 'https://blooms-pdx.herokuapp.com'
+    origin: CLIENT_ORIGIN
   })
 );
 
